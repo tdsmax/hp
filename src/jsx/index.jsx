@@ -253,26 +253,28 @@ var Hotel = React.createClass({
             )
         });
         return (
-            <div id={hotel.id} className="hComp clearfix">
+            <div id={hotel.id} className="hComp blk">
                 <div className="hComp__left">
                     <img className="hImg" src={hotel.images[0]} alt="Hotel Image"></img>
                 </div>
-                <div className="hComp__right">
-                    <div className="hTitle fLeft">
-                        <h2 className="hName text-capitalize">{hotel.name}</h2>
-                        <h4 className="hCityCon text-capitalize">{hotel.city + " - " + hotel.country}</h4>
+                <div className="hComp__right blk">
+                    <div className="hHead blk">
+                        <div className="hTitle fLeft">
+                            <h2 className="hName text-capitalize">{hotel.name}</h2>
+                            <h4 className="hCityCon text-capitalize">{hotel.city + " - " + hotel.country}</h4>
+                        </div>
+                        <div className="mtb-20 hRating fRight">
+                            {ratings}
+                        </div>
                     </div>
-                    <div className="hRating fRight">
-                        {ratings}
-                    </div>
-                    <div className="hDesc">
+                    <div className="hDesc blk">
                         {hotel.description}
                     </div>
-                    <div className="hRevPrice">
+                    <div className="hRevPrice blk">
                         <button className="btn fLeft" data-toggle="show" onClick={this.toggleReviews} id="showReviews">Show Reviews</button>
-                        <div className="hPrTm">
+                        <div className="hPrTm fRight">
                             <div className="hPrice">{hotel.price} &#8364;</div>
-                            <div className="hTime">{hotel.date_start} - {hotel.date_end}</div>
+                            <div className="hTime">{hotel.date_start.substr(0,10).split('-').reverse().join('-')} - {hotel.date_end.substr(0,10).split('-').reverse().join('-')}</div>
                         </div>
                     </div>
                 </div>

@@ -21029,7 +21029,7 @@ var Hotel = React.createClass({
         });
         return React.createElement(
             'div',
-            { id: hotel.id, className: 'hComp clearfix' },
+            { id: hotel.id, className: 'hComp blk' },
             React.createElement(
                 'div',
                 { className: 'hComp__left' },
@@ -21037,34 +21037,38 @@ var Hotel = React.createClass({
             ),
             React.createElement(
                 'div',
-                { className: 'hComp__right' },
+                { className: 'hComp__right blk' },
                 React.createElement(
                     'div',
-                    { className: 'hTitle fLeft' },
+                    { className: 'hHead blk' },
                     React.createElement(
-                        'h2',
-                        { className: 'hName text-capitalize' },
-                        hotel.name
+                        'div',
+                        { className: 'hTitle fLeft' },
+                        React.createElement(
+                            'h2',
+                            { className: 'hName text-capitalize' },
+                            hotel.name
+                        ),
+                        React.createElement(
+                            'h4',
+                            { className: 'hCityCon text-capitalize' },
+                            hotel.city + " - " + hotel.country
+                        )
                     ),
                     React.createElement(
-                        'h4',
-                        { className: 'hCityCon text-capitalize' },
-                        hotel.city + " - " + hotel.country
+                        'div',
+                        { className: 'mtb-20 hRating fRight' },
+                        ratings
                     )
                 ),
                 React.createElement(
                     'div',
-                    { className: 'hRating fRight' },
-                    ratings
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'hDesc' },
+                    { className: 'hDesc blk' },
                     hotel.description
                 ),
                 React.createElement(
                     'div',
-                    { className: 'hRevPrice' },
+                    { className: 'hRevPrice blk' },
                     React.createElement(
                         'button',
                         { className: 'btn fLeft', 'data-toggle': 'show', onClick: this.toggleReviews, id: 'showReviews' },
@@ -21072,7 +21076,7 @@ var Hotel = React.createClass({
                     ),
                     React.createElement(
                         'div',
-                        { className: 'hPrTm' },
+                        { className: 'hPrTm fRight' },
                         React.createElement(
                             'div',
                             { className: 'hPrice' },
@@ -21082,9 +21086,9 @@ var Hotel = React.createClass({
                         React.createElement(
                             'div',
                             { className: 'hTime' },
-                            hotel.date_start,
+                            hotel.date_start.substr(0, 10).split('-').reverse().join('-'),
                             ' - ',
-                            hotel.date_end
+                            hotel.date_end.substr(0, 10).split('-').reverse().join('-')
                         )
                     )
                 )
