@@ -254,30 +254,32 @@ var Hotel = React.createClass({
         });
         return (
             <div id={hotel.id} className="hComp blk">
-                <div className="hComp__left">
-                    <img className="hImg" src={hotel.images[0]} alt="Hotel Image"></img>
-                </div>
-                <div className="hComp__right blk">
-                    <div className="hHead blk">
-                        <div className="hTitle fLeft">
-                            <h2 className="hName text-capitalize">{hotel.name}</h2>
-                            <h4 className="hCityCon text-capitalize">{hotel.city + " - " + hotel.country}</h4>
+                <section className="hSec">
+                    <div className="hComp__left">
+                        <img className="hImg" src={hotel.images[0]} alt="Hotel Image"></img>
+                    </div>
+                    <div className="hComp__right blk">
+                        <div className="hHead blk">
+                            <div className="hTitle fLeft">
+                                <h2 className="hName text-capitalize">{hotel.name}</h2>
+                                <h4 className="hCityCon text-capitalize">{hotel.city + " - " + hotel.country}</h4>
+                            </div>
+                            <div className="mtb-20 hRating fRight">
+                                {ratings}
+                            </div>
                         </div>
-                        <div className="mtb-20 hRating fRight">
-                            {ratings}
+                        <div className="hDesc blk">
+                            {hotel.description}
+                        </div>
+                        <div className="hRevPrice blk">
+                            <button className="btn fLeft" data-toggle="show" onClick={this.toggleReviews} id="showReviews">Show Reviews</button>
+                            <div className="hPrTm fRight">
+                                <div className="hPrice">{hotel.price} &#8364;</div>
+                                <div className="hTime">{hotel.date_start.substr(0,10).split('-').reverse().join('-')} - {hotel.date_end.substr(0,10).split('-').reverse().join('-')}</div>
+                            </div>
                         </div>
                     </div>
-                    <div className="hDesc blk">
-                        {hotel.description}
-                    </div>
-                    <div className="hRevPrice blk">
-                        <button className="btn fLeft" data-toggle="show" onClick={this.toggleReviews} id="showReviews">Show Reviews</button>
-                        <div className="hPrTm fRight">
-                            <div className="hPrice">{hotel.price} &#8364;</div>
-                            <div className="hTime">{hotel.date_start.substr(0,10).split('-').reverse().join('-')} - {hotel.date_end.substr(0,10).split('-').reverse().join('-')}</div>
-                        </div>
-                    </div>
-                </div>
+                </section>
                 <div className="hReview hide"></div>
             </div>
         );
@@ -292,7 +294,15 @@ var HotelReview = React.createClass({
             data && data.length > 0
                 ? this.props.data.map(function (review, index) {
                         return (
-                            <div key={index}>{review.comment}</div>
+                            <div key={index} className="rev blk">
+                                <div className="revIcon block">
+                                    <div className="revSign centered">{review.positive ? '+' : '-'}</div>
+                                </div>
+                                <section className="revDetail">
+                                    <div className="revTitle">{review.name}</div>
+                                    <div className="revComment">{review.comment}</div>
+                                </section>
+                            </div>
                         );
                     })
                 : <div className="noData">Yet to be Reviewed..  </div>;

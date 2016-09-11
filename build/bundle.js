@@ -21031,64 +21031,68 @@ var Hotel = React.createClass({
             'div',
             { id: hotel.id, className: 'hComp blk' },
             React.createElement(
-                'div',
-                { className: 'hComp__left' },
-                React.createElement('img', { className: 'hImg', src: hotel.images[0], alt: 'Hotel Image' })
-            ),
-            React.createElement(
-                'div',
-                { className: 'hComp__right blk' },
+                'section',
+                { className: 'hSec' },
                 React.createElement(
                     'div',
-                    { className: 'hHead blk' },
+                    { className: 'hComp__left' },
+                    React.createElement('img', { className: 'hImg', src: hotel.images[0], alt: 'Hotel Image' })
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'hComp__right blk' },
                     React.createElement(
                         'div',
-                        { className: 'hTitle fLeft' },
+                        { className: 'hHead blk' },
                         React.createElement(
-                            'h2',
-                            { className: 'hName text-capitalize' },
-                            hotel.name
+                            'div',
+                            { className: 'hTitle fLeft' },
+                            React.createElement(
+                                'h2',
+                                { className: 'hName text-capitalize' },
+                                hotel.name
+                            ),
+                            React.createElement(
+                                'h4',
+                                { className: 'hCityCon text-capitalize' },
+                                hotel.city + " - " + hotel.country
+                            )
                         ),
                         React.createElement(
-                            'h4',
-                            { className: 'hCityCon text-capitalize' },
-                            hotel.city + " - " + hotel.country
+                            'div',
+                            { className: 'mtb-20 hRating fRight' },
+                            ratings
                         )
                     ),
                     React.createElement(
                         'div',
-                        { className: 'mtb-20 hRating fRight' },
-                        ratings
-                    )
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'hDesc blk' },
-                    hotel.description
-                ),
-                React.createElement(
-                    'div',
-                    { className: 'hRevPrice blk' },
-                    React.createElement(
-                        'button',
-                        { className: 'btn fLeft', 'data-toggle': 'show', onClick: this.toggleReviews, id: 'showReviews' },
-                        'Show Reviews'
+                        { className: 'hDesc blk' },
+                        hotel.description
                     ),
                     React.createElement(
                         'div',
-                        { className: 'hPrTm fRight' },
+                        { className: 'hRevPrice blk' },
                         React.createElement(
-                            'div',
-                            { className: 'hPrice' },
-                            hotel.price,
-                            ' €'
+                            'button',
+                            { className: 'btn fLeft', 'data-toggle': 'show', onClick: this.toggleReviews, id: 'showReviews' },
+                            'Show Reviews'
                         ),
                         React.createElement(
                             'div',
-                            { className: 'hTime' },
-                            hotel.date_start.substr(0, 10).split('-').reverse().join('-'),
-                            ' - ',
-                            hotel.date_end.substr(0, 10).split('-').reverse().join('-')
+                            { className: 'hPrTm fRight' },
+                            React.createElement(
+                                'div',
+                                { className: 'hPrice' },
+                                hotel.price,
+                                ' €'
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'hTime' },
+                                hotel.date_start.substr(0, 10).split('-').reverse().join('-'),
+                                ' - ',
+                                hotel.date_end.substr(0, 10).split('-').reverse().join('-')
+                            )
                         )
                     )
                 )
@@ -21106,8 +21110,30 @@ var HotelReview = React.createClass({
         var reviews = data && data.length > 0 ? this.props.data.map(function (review, index) {
             return React.createElement(
                 'div',
-                { key: index },
-                review.comment
+                { key: index, className: 'rev blk' },
+                React.createElement(
+                    'div',
+                    { className: 'revIcon block' },
+                    React.createElement(
+                        'div',
+                        { className: 'revSign centered' },
+                        review.positive ? '+' : '-'
+                    )
+                ),
+                React.createElement(
+                    'section',
+                    { className: 'revDetail' },
+                    React.createElement(
+                        'div',
+                        { className: 'revTitle' },
+                        review.name
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'revComment' },
+                        review.comment
+                    )
+                )
             );
         }) : React.createElement(
             'div',

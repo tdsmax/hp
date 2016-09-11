@@ -373,6 +373,7 @@ main {
     box-shadow: 0 0 4px rgba(0,0,0,0.5);
     background-color: rgba(0,0,0,0.05);
     min-height: 480px;
+    border: 1px solid lightgoldenrodyellow;
 }
 
 .hImg {
@@ -418,13 +419,112 @@ main {
 .hRevPrice {
     position: absolute;
     bottom: 20px;
-    width: 100%;
+    width: 95%;
 }
 
-.hPrice {}
+.hPrice {
+    font-size: 1.5em;
+    line-height: 1.3em;
+    letter-spacing: 1px;
+}
 
 .hPrTm {
     text-align: right;
     font-size: 1.5em;
     color: #444;
+}
+
+.error {
+    background: #ccc;
+    padding: 30px;
+    font-size: 1.2em;
+    border-radius: 4px;
+    color: #333;
+    box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
+}
+
+section.hSec {
+    height: 480px;
+    border-bottom: 1px solid lightgray;
+    padding-bottom: 2px;
+}
+
+.hTime {
+    font-size: 0.75em;
+    color: #555;
+}
+
+
+/* This parent can be any width and height */
+.block {
+    text-align: center;
+
+    /* May want to do this if there is risk the container may be narrower than the element inside */
+    white-space: nowrap;
+}
+
+/* The ghost, nudged to maintain perfect centering */
+.block:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em; /* Adjusts for spacing */
+}
+
+/* The element to be centered, can also be of any width and height */
+.centered {
+    display: inline-block;
+    vertical-align: middle;
+    width: 300px;
+}
+
+@media screen and (max-width: 990px){
+
+}
+
+.rev {
+    width: 98%;
+    margin: auto;
+    border-bottom: 1px solid lightgray;
+    padding: 10px 0px;
+}
+
+.revSign {
+    width: 30px;
+    height: 30px;
+    display: block;
+    background: white;
+    border-radius: 15px;
+    text-align: center;
+    line-height: 27px;
+    margin: auto;
+}
+
+.revIcon {
+    float: left;
+    margin: 0 20px;
+    /* height: 100%; */
+    width: 5%;
+}
+
+section.revDetail {
+    float: left;
+    width: 90%;
+}
+
+.revTitle {
+    font-size: 1.2em;
+    padding: 10px 0;
+}
+
+.hReviewList {
+    background-color: #aaa;
+}
+
+.revComment {
+    font-size: 0.85em;
+    color: #333;
+    line-height: 1em;
+    margin-bottom: 10px;
 }
