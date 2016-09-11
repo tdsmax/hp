@@ -203,22 +203,12 @@ var container = "hotelsContainer";
 var containerElem = document.getElementById("hotelsContainer");
 var size = 10;
 var scrollCount = -1;
+var loadHotelsElem = document.getElementById("loadHotels");
 // Handle Ajax Calls Here
 var urls = {
     hotels: "http://fake-hotel-api.herokuapp.com/api/hotels",
     reviews: "http://fake-hotel-api.herokuapp.com/api/reviews"
 };
-
-HP.ajax({
-    url: urls.hotels + "?&count=" + size,
-    success: function (res) {
-        res = JSON.parse(res);
-        _renderHotel(res, ++scrollCount);
-    },
-    error: function (res) {
-        console.log(res);
-    }
-});
 
 var Hotel = React.createClass({
     render: function () {
@@ -241,7 +231,7 @@ var HolidayHotels = React.createClass({
     }
 });
 
-function _renderHotel(data, scrollCount) {
+function _renderHotel(data, scrollCount,cb) {
     var id = container + scrollCount;
     if (!document.getElementById(id)) {
         var elem = document.createElement("div");
@@ -251,6 +241,33 @@ function _renderHotel(data, scrollCount) {
     }
     ReactDOM.render(
         <HolidayHotels data={data}/>,
-        document.getElementById(id)
+        document.getElementById(id),
+        function(){
+            console.log("Render Complete !!");
+            if(Sys.isDefined(cb) && Sys.isFunction(cb)){
+                cb.call(this);
+            }
+        }
     );
 }
+
+function _sendAjax(cb){
+    HP.ajax({
+        url: urls.hotels + "?&count=" + size,
+        success: function (res) {
+            res = JSON.parse(res);
+            _renderHotel(res, ++scrollCount,cb);
+        },
+        error: function (res) {
+            console.log(res);
+        }
+    });
+}
+
+function hideLoadHotels(){
+    loadHotelsElem.classList.add("btn--hide");
+}
+
+loadHotelsElem.addEventListener('click',function(){
+    _sendAjax(hideLoadHotels());
+});

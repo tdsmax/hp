@@ -20972,22 +20972,12 @@ var container = "hotelsContainer";
 var containerElem = document.getElementById("hotelsContainer");
 var size = 10;
 var scrollCount = -1;
+var loadHotelsElem = document.getElementById("loadHotels");
 // Handle Ajax Calls Here
 var urls = {
     hotels: "http://fake-hotel-api.herokuapp.com/api/hotels",
     reviews: "http://fake-hotel-api.herokuapp.com/api/reviews"
 };
-
-HP.ajax({
-    url: urls.hotels + "?&count=" + size,
-    success: function success(res) {
-        res = JSON.parse(res);
-        _renderHotel(res, ++scrollCount);
-    },
-    error: function error(res) {
-        console.log(res);
-    }
-});
 
 var Hotel = React.createClass({
     displayName: 'Hotel',
@@ -21016,7 +21006,7 @@ var HolidayHotels = React.createClass({
     }
 });
 
-function _renderHotel(data, scrollCount) {
+function _renderHotel(data, scrollCount, cb) {
     var id = container + scrollCount;
     if (!document.getElementById(id)) {
         var elem = document.createElement("div");
@@ -21024,7 +21014,33 @@ function _renderHotel(data, scrollCount) {
         elem.class = "hotel";
         containerElem.appendChild(elem);
     }
-    ReactDOM.render(React.createElement(HolidayHotels, { data: data }), document.getElementById(id));
+    ReactDOM.render(React.createElement(HolidayHotels, { data: data }), document.getElementById(id), function () {
+        console.log("Render Complete !!");
+        if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
+            cb.call(this);
+        }
+    });
 }
+
+function _sendAjax(cb) {
+    HP.ajax({
+        url: urls.hotels + "?&count=" + size,
+        success: function success(res) {
+            res = JSON.parse(res);
+            _renderHotel(res, ++scrollCount, cb);
+        },
+        error: function error(res) {
+            console.log(res);
+        }
+    });
+}
+
+function hideLoadHotels() {
+    loadHotelsElem.classList.add("btn--hide");
+}
+
+loadHotelsElem.addEventListener('click', function () {
+    _sendAjax(hideLoadHotels());
+});
 
 },{"react":174,"react-dom":29}]},{},[175]);
