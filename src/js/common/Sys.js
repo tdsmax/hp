@@ -5,7 +5,7 @@
  * @created 2016-08-09
 */
 
-Sys = {};
+var Sys = {};
 
 Sys = {
     isEmptyObject: function(val){
