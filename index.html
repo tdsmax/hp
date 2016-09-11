@@ -10,15 +10,28 @@
 	<link rel="stylesheet" href="src/css/main.css">
 </head>
 <body>
-	<header class="container-fluid">
-
-	</header>
 	<main class="container">
-		<button class="btn" id="loadHotels">Load Hotels</button>
-		<div id="hotelsContainer" class="hotelsContainer"></div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<img src="src/img/hp.png" class="brand inline-block" alt="Holiday Pirates">
+				<h2 class="panel-title text-capitalize v-align-mid inline-block fs-36">Holiday Hotels</h2>
+			</div>
+			<div class="panel-body">
+					<div class="full-width">
+						<button class="btn btn-default btn--centre btn--show" type="button" data-toggle="collapse" data-target="#results" aria-expanded="false" id="loadHotels">Load Hotels</button>
+					</div>
+				<div class="collapse" id="results">
+					<div class="well mtb-20">
+						<div id="hotelsContainer" class="hotelsContainer"></div>
+						<div id="loadErrors" class="loadErrors"></div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</main>
 	<script src="src/js/common/jquery-3.0.0.js"></script>
 	<script src="src/js/common/bootstrap.js"></script>
+	<script src="src/js/main.js"></script>
 	<script src="build/bundle.js"></script>
 </body>
 </html>

@@ -20968,22 +20968,51 @@ HP.ajax = function (options) {
     _construction();
 };
 
+/**
+ * @description This is the main React and app Logic
+ * @author Tarandeep Singh
+ * @created 2016-09-11
+ * */
+
 var container = "hotelsContainer";
-var containerElem = document.getElementById("hotelsContainer");
-var size = 10;
+var errorContainer = "hotelErrorsContainer";
+var containerElem = document.getElementById(container);
+var size = 5;
 var scrollCount = -1;
 var loadHotelsElem = document.getElementById("loadHotels");
+var loadErrorsElem = document.getElementById("loadErrors");
+
 // Handle Ajax Calls Here
 var urls = {
-    hotels: "http://fake-hotel-api.herokuapp.com/api/hotels",
-    reviews: "http://fake-hotel-api.herokuapp.com/api/reviews"
+    error: "http://fake-hotel-api.herokuapp.com/api/hotels?&force_error=true",
+    hotels: "http://fake-hotel-api.herokuapp.com/api/hotels?&no_error=true",
+    reviews: "http://fake-hotel-api.herokuapp.com/api/reviews?&no_error=true"
 };
 
 var Hotel = React.createClass({
     displayName: 'Hotel',
 
-    showReviews: function showReviews() {
-        _sendReviewsAjax(this.props.data.id);
+    toggleReviews: function toggleReviews(event) {
+        var tar = event.currentTarget;
+        var data = tar.getAttribute('data-toggle');
+        var reviewElem = document.getElementById(this.props.data.id).querySelector('.hReview');
+        var cached = reviewElem.querySelector(".hReviewList");
+        var cb = function cb() {
+            tar.textContent = "Hide Reviews";
+        };
+        if (data === "show") {
+            if (!cached) {
+                _sendReviewsAjax(this.props.data.id, cb);
+            } else {
+                cb();
+            }
+            tar.setAttribute('data-toggle', 'hide');
+            reviewElem.classList.toggle('hide');
+        } else {
+            tar.textContent = "Show Reviews";
+            tar.setAttribute('data-toggle', 'show');
+            reviewElem.classList.toggle('hide');
+        }
     },
     render: function render() {
         var hotel = this.props.data;
@@ -21000,7 +21029,7 @@ var Hotel = React.createClass({
         });
         return React.createElement(
             'div',
-            { id: hotel.id, className: 'hComp' },
+            { id: hotel.id, className: 'hComp clearfix' },
             React.createElement(
                 'div',
                 { className: 'hComp__left' },
@@ -21014,12 +21043,12 @@ var Hotel = React.createClass({
                     { className: 'hTitle fLeft' },
                     React.createElement(
                         'h2',
-                        { className: 'hName' },
+                        { className: 'hName text-capitalize' },
                         hotel.name
                     ),
                     React.createElement(
                         'h4',
-                        { className: 'hCityCon' },
+                        { className: 'hCityCon text-capitalize' },
                         hotel.city + " - " + hotel.country
                     )
                 ),
@@ -21038,7 +21067,7 @@ var Hotel = React.createClass({
                     { className: 'hRevPrice' },
                     React.createElement(
                         'button',
-                        { className: 'btn btn--large fLeft', onClick: this.showReviews, id: 'showReviews' },
+                        { className: 'btn fLeft', 'data-toggle': 'show', onClick: this.toggleReviews, id: 'showReviews' },
                         'Show Reviews'
                     ),
                     React.createElement(
@@ -21060,21 +21089,27 @@ var Hotel = React.createClass({
                     )
                 )
             ),
-            React.createElement('div', { className: 'hReview' })
+            React.createElement('div', { className: 'hReview hide' })
         );
     }
 });
+
 var HotelReview = React.createClass({
     displayName: 'HotelReview',
 
     render: function render() {
-        var reviews = this.props.data.map(function (review, index) {
+        var data = this.props.data;
+        var reviews = data && data.length > 0 ? this.props.data.map(function (review, index) {
             return React.createElement(
                 'div',
                 { key: index },
                 review.comment
             );
-        });
+        }) : React.createElement(
+            'div',
+            { className: 'noData' },
+            'Yet to be Reviewed..  '
+        );
         return React.createElement(
             'div',
             { className: 'hReviewList' },
@@ -21107,7 +21142,6 @@ function _renderHotel(data, scrollCount, cb) {
         containerElem.appendChild(elem);
     }
     ReactDOM.render(React.createElement(HolidayHotels, { data: data }), document.getElementById(id), function () {
-        console.log("Render Complete !!");
         if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
             cb.call(this);
         }
@@ -21116,7 +21150,18 @@ function _renderHotel(data, scrollCount, cb) {
 
 function _renderReviews(data, id, cb) {
     ReactDOM.render(React.createElement(HotelReview, { data: data }), document.getElementById(id).querySelector(".hReview"), function () {
-        console.log("Review Render Complete !!");
+        if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
+            cb.call(this);
+        }
+    });
+}
+
+function _renderError(data, id, cb) {
+    ReactDOM.render(React.createElement(
+        'div',
+        { className: 'error' },
+        data
+    ), document.getElementById(id), function () {
         if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
             cb.call(this);
         }
@@ -21125,26 +21170,25 @@ function _renderReviews(data, id, cb) {
 
 function _sendHotelsAjax(cb) {
     HP.ajax({
-        url: urls.hotels + "?&count=" + size,
+        url: urls.hotels + "&count=" + size,
         success: function success(res) {
-            res = JSON.parse(res);
-            _renderHotel(res, ++scrollCount, cb);
+            _renderHotel(JSON.parse(res), ++scrollCount, cb);
         },
         error: function error(res) {
-            console.log(res);
+            _renderError(JSON.parse(res.responseText).error, errorContainer);
         }
     });
 }
 
 function _sendReviewsAjax(id, cb) {
     HP.ajax({
-        url: urls.reviews + "?&hotel_id=" + id,
+        url: urls.reviews + "&hotel_id=" + id,
         success: function success(res) {
             res = JSON.parse(res);
             _renderReviews(res, id, cb);
         },
         error: function error(res) {
-            console.log(res);
+            _renderError(JSON.parse(res.responseText).error, errorContainer);
         }
     });
 }
@@ -21154,7 +21198,22 @@ function hideLoadHotels() {
 }
 
 loadHotelsElem.addEventListener('click', function () {
-    _sendHotelsAjax(hideLoadHotels());
+    _sendHotelsAjax(hideLoadHotels);
+});
+
+/*** Just For Testing Purpose **/
+
+function _sendHotelsErrorAjax() {
+    HP.ajax({
+        url: urls.error,
+        error: function error(res) {
+            _renderError(JSON.parse(res.responseText).error, errorContainer);
+        }
+    });
+}
+
+loadErrorsElem.addEventListener('click', function () {
+    _sendHotelsErrorAjax();
 });
 
 },{"react":174,"react-dom":29}]},{},[175]);
