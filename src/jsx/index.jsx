@@ -211,13 +211,62 @@ var urls = {
 };
 
 var Hotel = React.createClass({
+    showReviews: function(){
+        _sendReviewsAjax(this.props.data.id);
+    },
     render: function () {
-        var name = this.props.data.name;
+        var hotel = this.props.data;
+        var ratings = [1,2,3,4,5].map(function(i,j){
+            return (
+                i <= hotel.stars
+                    ? <span key={j}>&#9733;</span>
+                    : <span key={j}>&#9734;</span>
+            )
+        });
         return (
-            <li>{name}</li>
+            <div id={hotel.id} className="hComp">
+                <div className="hComp__left">
+                    <img className="hImg" src={hotel.images[0]} alt="Hotel Image"></img>
+                </div>
+                <div className="hComp__right">
+                    <div className="hTitle fLeft">
+                        <h2 className="hName">{hotel.name}</h2>
+                        <h4 className="hCityCon">{hotel.city + " - " + hotel.country}</h4>
+                    </div>
+                    <div className="hRating fRight">
+                        {ratings}
+                    </div>
+                    <div className="hDesc">
+                        {hotel.description}
+                    </div>
+                    <div className="hRevPrice">
+                        <button className="btn btn--large fLeft" onClick={this.showReviews} id="showReviews">Show Reviews</button>
+                        <div className="hPrTm">
+                            <div className="hPrice">{hotel.price} &#8364;</div>
+                            <div className="hTime">{hotel.date_start} - {hotel.date_end}</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="hReview"></div>
+            </div>
         );
     }
 });
+var HotelReview = React.createClass({
+    render: function () {
+        var reviews = this.props.data.map(function (review, index) {
+            return (
+                <div key={index}>{review.comment}</div>
+            );
+        });
+        return (
+            <div className="hReviewList">
+                {reviews}
+            </div>
+        );
+    }
+});
+
 var HolidayHotels = React.createClass({
     render: function () {
         var hotels = this.props.data.map(function (hotel, index) {
@@ -226,7 +275,7 @@ var HolidayHotels = React.createClass({
             );
         });
         return (
-            <ul>{hotels}</ul>
+            <div className="hList">{hotels}</div>
         );
     }
 });
@@ -236,7 +285,7 @@ function _renderHotel(data, scrollCount,cb) {
     if (!document.getElementById(id)) {
         var elem = document.createElement("div");
         elem.id = id;
-        elem.class = "hotel";
+        elem.class = "hCont";
         containerElem.appendChild(elem);
     }
     ReactDOM.render(
@@ -251,7 +300,20 @@ function _renderHotel(data, scrollCount,cb) {
     );
 }
 
-function _sendAjax(cb){
+function _renderReviews(data,id,cb) {
+    ReactDOM.render(
+        <HotelReview data={data}/>,
+        document.getElementById(id).querySelector(".hReview"),
+        function(){
+            console.log("Review Render Complete !!");
+            if(Sys.isDefined(cb) && Sys.isFunction(cb)){
+                cb.call(this);
+            }
+        }
+    );
+}
+
+function _sendHotelsAjax(cb){
     HP.ajax({
         url: urls.hotels + "?&count=" + size,
         success: function (res) {
@@ -264,10 +326,23 @@ function _sendAjax(cb){
     });
 }
 
+function _sendReviewsAjax(id,cb){
+    HP.ajax({
+        url: urls.reviews + "?&hotel_id=" + id,
+        success: function (res) {
+            res = JSON.parse(res);
+            _renderReviews(res,id,cb);
+        },
+        error: function (res) {
+            console.log(res);
+        }
+    });
+}
+
 function hideLoadHotels(){
     loadHotelsElem.classList.add("btn--hide");
 }
 
 loadHotelsElem.addEventListener('click',function(){
-    _sendAjax(hideLoadHotels());
+    _sendHotelsAjax(hideLoadHotels());
 });

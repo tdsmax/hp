@@ -20982,15 +20982,107 @@ var urls = {
 var Hotel = React.createClass({
     displayName: 'Hotel',
 
+    showReviews: function showReviews() {
+        _sendReviewsAjax(this.props.data.id);
+    },
     render: function render() {
-        var name = this.props.data.name;
+        var hotel = this.props.data;
+        var ratings = [1, 2, 3, 4, 5].map(function (i, j) {
+            return i <= hotel.stars ? React.createElement(
+                'span',
+                { key: j },
+                '★'
+            ) : React.createElement(
+                'span',
+                { key: j },
+                '☆'
+            );
+        });
         return React.createElement(
-            'li',
-            null,
-            name
+            'div',
+            { id: hotel.id, className: 'hComp' },
+            React.createElement(
+                'div',
+                { className: 'hComp__left' },
+                React.createElement('img', { className: 'hImg', src: hotel.images[0], alt: 'Hotel Image' })
+            ),
+            React.createElement(
+                'div',
+                { className: 'hComp__right' },
+                React.createElement(
+                    'div',
+                    { className: 'hTitle fLeft' },
+                    React.createElement(
+                        'h2',
+                        { className: 'hName' },
+                        hotel.name
+                    ),
+                    React.createElement(
+                        'h4',
+                        { className: 'hCityCon' },
+                        hotel.city + " - " + hotel.country
+                    )
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'hRating fRight' },
+                    ratings
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'hDesc' },
+                    hotel.description
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'hRevPrice' },
+                    React.createElement(
+                        'button',
+                        { className: 'btn btn--large fLeft', onClick: this.showReviews, id: 'showReviews' },
+                        'Show Reviews'
+                    ),
+                    React.createElement(
+                        'div',
+                        { className: 'hPrTm' },
+                        React.createElement(
+                            'div',
+                            { className: 'hPrice' },
+                            hotel.price,
+                            ' €'
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'hTime' },
+                            hotel.date_start,
+                            ' - ',
+                            hotel.date_end
+                        )
+                    )
+                )
+            ),
+            React.createElement('div', { className: 'hReview' })
         );
     }
 });
+var HotelReview = React.createClass({
+    displayName: 'HotelReview',
+
+    render: function render() {
+        var reviews = this.props.data.map(function (review, index) {
+            return React.createElement(
+                'div',
+                { key: index },
+                review.comment
+            );
+        });
+        return React.createElement(
+            'div',
+            { className: 'hReviewList' },
+            reviews
+        );
+    }
+});
+
 var HolidayHotels = React.createClass({
     displayName: 'HolidayHotels',
 
@@ -20999,8 +21091,8 @@ var HolidayHotels = React.createClass({
             return React.createElement(Hotel, { key: index, data: hotel });
         });
         return React.createElement(
-            'ul',
-            null,
+            'div',
+            { className: 'hList' },
             hotels
         );
     }
@@ -21011,7 +21103,7 @@ function _renderHotel(data, scrollCount, cb) {
     if (!document.getElementById(id)) {
         var elem = document.createElement("div");
         elem.id = id;
-        elem.class = "hotel";
+        elem.class = "hCont";
         containerElem.appendChild(elem);
     }
     ReactDOM.render(React.createElement(HolidayHotels, { data: data }), document.getElementById(id), function () {
@@ -21022,7 +21114,16 @@ function _renderHotel(data, scrollCount, cb) {
     });
 }
 
-function _sendAjax(cb) {
+function _renderReviews(data, id, cb) {
+    ReactDOM.render(React.createElement(HotelReview, { data: data }), document.getElementById(id).querySelector(".hReview"), function () {
+        console.log("Review Render Complete !!");
+        if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
+            cb.call(this);
+        }
+    });
+}
+
+function _sendHotelsAjax(cb) {
     HP.ajax({
         url: urls.hotels + "?&count=" + size,
         success: function success(res) {
@@ -21035,12 +21136,25 @@ function _sendAjax(cb) {
     });
 }
 
+function _sendReviewsAjax(id, cb) {
+    HP.ajax({
+        url: urls.reviews + "?&hotel_id=" + id,
+        success: function success(res) {
+            res = JSON.parse(res);
+            _renderReviews(res, id, cb);
+        },
+        error: function error(res) {
+            console.log(res);
+        }
+    });
+}
+
 function hideLoadHotels() {
     loadHotelsElem.classList.add("btn--hide");
 }
 
 loadHotelsElem.addEventListener('click', function () {
-    _sendAjax(hideLoadHotels());
+    _sendHotelsAjax(hideLoadHotels());
 });
 
 },{"react":174,"react-dom":29}]},{},[175]);
