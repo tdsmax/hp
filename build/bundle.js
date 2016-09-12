@@ -20791,7 +20791,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 
 /**
- * @description Util file
+ * @description Util file :: From Vault
  * @author Tarandeep Singh
  * @created 2016-08-09
 */
@@ -20839,9 +20839,13 @@ Sys = {
     }
 };
 
+/**
+ * This isn't Required but just makes WebStorm color Code Better :D
+ * */
 Sys.isObject = Sys.isArguments = Sys.isFunction = Sys.isString = Sys.isArray = Sys.isUndefined = "";
 
-// This Method will create Multiple functions in the Sys object that can be used to test type of
+/** This Method will create Multiple functions in the Sys object that can be used to test type of **/
+
 ['Arguments', 'Function', 'String', 'Number', 'Date', 'RegExp', 'Object', 'Array', 'Undefined'].forEach(function (name) {
     Sys['is' + name] = function (obj) {
         return toString.call(obj) == '[object ' + name + ']';
@@ -20849,9 +20853,9 @@ Sys.isObject = Sys.isArguments = Sys.isFunction = Sys.isString = Sys.isArray = S
 });
 
 /**
- * @description Ajax Module
+ * @description Ajax Module ::  From Vault
  * @author Tarandeep Singh
- * @created 2016-09-07
+ * @created 2016-08-12
  */
 
 /* Define our constructor*/
@@ -20969,6 +20973,69 @@ HP.ajax = function (options) {
 };
 
 /**
+ * Created by Tarandeep Singh on 02/08/16. :: Lightest Carousel Component : From Vault
+ */
+
+(function (win, doc, undefined) {
+
+    var HP = win.HP = win.HP || {};
+
+    HP.carousel = function (comp) {
+
+        var mainComp = comp ? [comp] : doc.querySelectorAll('.carousel');
+        if (mainComp) {
+            Array.prototype.forEach.call(mainComp, function (comp) {
+                _construction(comp);
+            });
+        }
+        function _construction(comp) {
+            var _running = false;
+            var ci = 0;
+            var _compsContainer = comp.querySelector('.carouselSec');
+            var _compsWidth = 512;
+            var _compsLen = comp.querySelectorAll('.carouselComp').length;
+            var _rightBtn = comp.querySelector('.rightBtn');
+            var _leftBtn = comp.querySelector('.leftBtn');
+
+            var _avoidMultiClick = function _avoidMultiClick() {
+                _running = true;
+                setTimeout(function () {
+                    _running = false;
+                }, 500);
+            };
+
+            var _right = function _right() {
+                if (!_running) {
+                    if (ci < _compsLen - 1) {
+                        _compsContainer.style['left'] = ++ci * -_compsWidth + 'px';
+                        _avoidMultiClick();
+                    } else {
+                        _compsContainer.style['left'] = '0px';
+                        _avoidMultiClick();
+                        ci = 0;
+                    }
+                }
+            };
+            var _left = function _left() {
+                if (!_running) {
+                    if (ci > 0) {
+                        --ci;
+                        _compsContainer.style['left'] = parseInt(_compsContainer.style['left']) + parseInt(_compsWidth) + 'px';
+                        _avoidMultiClick();
+                    } else {
+                        ci = _compsLen - 2;
+                        _right();
+                    }
+                }
+            };
+
+            _rightBtn.addEventListener("click", _right);
+            _leftBtn.addEventListener("click", _left);
+        }
+    };
+})(window, document);
+
+/**
  * @description This is the main React and app Logic
  * @author Tarandeep Singh
  * @created 2016-09-11
@@ -20989,6 +21056,45 @@ var urls = {
     reviews: "http://fake-hotel-api.herokuapp.com/api/reviews?&no_error=true"
 };
 
+/**
+ * @description This is Carousel React Component
+ * @data It Expects array of images as Data
+ * @author Tarandeep Singh : 2016-09-12
+ * */
+var CarouselComp = React.createClass({
+    displayName: 'CarouselComp',
+
+    render: function render() {
+        var carousel = this.props.data.map(function (image, index) {
+            return React.createElement('img', { key: index, className: 'hImg carouselComp', src: image, alt: 'Hotel Image' });
+        });
+        return React.createElement(
+            'section',
+            { className: 'carousel' },
+            React.createElement(
+                'div',
+                { className: 'leftBtn' },
+                '◀'
+            ),
+            React.createElement(
+                'div',
+                { className: 'carouselSec' },
+                carousel
+            ),
+            React.createElement(
+                'div',
+                { className: 'rightBtn' },
+                '▶'
+            )
+        );
+    }
+});
+
+/**
+ * @description This is Hotel React Component
+ * @data It Expects Hotel Object as Data
+ * @author Tarandeep Singh : 2016-09-12
+ * */
 var Hotel = React.createClass({
     displayName: 'Hotel',
 
@@ -21036,7 +21142,7 @@ var Hotel = React.createClass({
                 React.createElement(
                     'div',
                     { className: 'hComp__left' },
-                    React.createElement('img', { className: 'hImg', src: hotel.images[0], alt: 'Hotel Image' })
+                    React.createElement(CarouselComp, { data: hotel.images })
                 ),
                 React.createElement(
                     'div',
@@ -21102,6 +21208,11 @@ var Hotel = React.createClass({
     }
 });
 
+/**
+ * @description This is HotelReview React Component
+ * @data It Expects array of review Objects as Data
+ * @author Tarandeep Singh : 2016-09-12
+ * */
 var HotelReview = React.createClass({
     displayName: 'HotelReview',
 
@@ -21148,6 +21259,11 @@ var HotelReview = React.createClass({
     }
 });
 
+/**
+ * @description This is the Main App Holiday Hotels React Component: It Shows list of hotels on Load Hotels click
+ * @author Tarandeep Singh
+ * @created 2016-09-12
+ * */
 var HolidayHotels = React.createClass({
     displayName: 'HolidayHotels',
 
@@ -21163,6 +21279,11 @@ var HolidayHotels = React.createClass({
     }
 });
 
+/**
+ * @description This is main Rendered Function called for Rendeing Hotel List
+ * @data It Expects HotelList as Data from Ajax Results
+ * @author Tarandeep Singh : 2016-09-12
+ * */
 function _renderHotel(data, scrollCount, cb) {
     var id = container + scrollCount;
     if (!document.getElementById(id)) {
@@ -21178,6 +21299,11 @@ function _renderHotel(data, scrollCount, cb) {
     });
 }
 
+/**
+ * @description This is Review Rendering Function
+ * @data It Expects data from Ajax call for Reviews and rendering ID
+ * @author Tarandeep Singh : 2016-09-12
+ * */
 function _renderReviews(data, id, cb) {
     ReactDOM.render(React.createElement(HotelReview, { data: data }), document.getElementById(id).querySelector(".hReview"), function () {
         if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
@@ -21186,6 +21312,11 @@ function _renderReviews(data, id, cb) {
     });
 }
 
+/**
+ * @description This is Render Error
+ * @data It Expects data from Ajax call on Error
+ * @author Tarandeep Singh : 2016-09-12
+ * */
 function _renderError(data, id, cb) {
     ReactDOM.render(React.createElement(
         'div',
@@ -21198,6 +21329,11 @@ function _renderError(data, id, cb) {
     });
 }
 
+/**
+ * @description This function is called to Bring Hotel Data From API
+ * @data It Expects data from Ajax call for Reviews and rendering ID
+ * @author Tarandeep Singh : 2016-09-12
+ * */
 function _sendHotelsAjax(cb) {
     HP.ajax({
         url: urls.hotels + "&count=" + size,
@@ -21210,6 +21346,11 @@ function _sendHotelsAjax(cb) {
     });
 }
 
+/**
+ * @description This function is called to Bring Review Data From API for particular hotel
+ * @data It Expects data from Ajax call for Reviews and rendering ID
+ * @author Tarandeep Singh : 2016-09-12
+ * */
 function _sendReviewsAjax(id, cb) {
     HP.ajax({
         url: urls.reviews + "&hotel_id=" + id,
@@ -21223,10 +21364,20 @@ function _sendReviewsAjax(id, cb) {
     });
 }
 
+/**
+ * @description This is helper function to be called post successful hotels Data
+ * @data It Expects data from Ajax call for Reviews and rendering ID
+ * @author Tarandeep Singh : 2016-09-12
+ * */
 function hideLoadHotels() {
     loadHotelsElem.classList.add("btn--hide");
 }
 
+/**
+ * @description This function is Used to Attach Ajax Application Load Call
+ * @data It Expects data from Ajax call for Reviews and rendering ID
+ * @author Tarandeep Singh : 2016-09-12
+ * */
 loadHotelsElem.addEventListener('click', function () {
     _sendHotelsAjax(hideLoadHotels);
 });
