@@ -460,8 +460,8 @@ main {
     width: 98%;
     margin: auto;
     border-bottom: 1px solid lightgray;
-    padding: 10px 0;
     position: relative;
+    overflow: auto;
 }
 
 .revSign {
@@ -478,15 +478,16 @@ main {
 .revIcon {
     float: left;
     margin: 0 2.5%;
-    width: 5%;
-    position: relative;
+    position: absolute;
     top: 50%;
-    transform: translateY(50%);
+    transform: translateY(-50%);
+    overflow: auto;
+    width: 10%;
 }
 
 section.revDetail {
-    float: left;
-    width: 90%;
+    float: right;
+    width: 85%;
 }
 
 .revTitle {
