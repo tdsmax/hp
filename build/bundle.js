@@ -20844,7 +20844,7 @@ Sys = {
 /**
  * This isn't Required but just makes WebStorm color Code Better :D
  * */
-Sys.isObject = Sys.isArguments = Sys.isFunction = Sys.isString = Sys.isArray = Sys.isUndefined = "";
+Sys.isObject = Sys.isArguments = Sys.isFunction = Sys.isString = Sys.isArray = Sys.isUndefined = Sys.isDate = Sys.isNumber = Sys.isRegExp = "";
 
 /** This Method will create Multiple functions in the Sys object that can be used to test type of **/
 
@@ -20860,8 +20860,6 @@ Sys.isObject = Sys.isArguments = Sys.isFunction = Sys.isString = Sys.isArray = S
  * @created 2016-08-12
  */
 
-/* Define our constructor*/
-"use strict";
 var HP = window.HP = window.HP || {};
 
 HP.ajax = function (options) {
@@ -21065,6 +21063,7 @@ HP.ajax = function (options) {
 
 (function (win, doc, undefined) {
     var HP = win.HP || {};
+    HP.rendered = false;
     /**
      * @description This is the main React and app Logic
      * @author Tarandeep Singh
@@ -21323,6 +21322,7 @@ HP.ajax = function (options) {
         }
         ReactDOM.render(React.createElement(HolidayHotels, { data: data }), doc.getElementById(id), function () {
             /** Initialize Carousel on Hotels Here **/
+            HP.rendered = true;
             HP.carousel();
             if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
                 cb.call(this);
@@ -21396,6 +21396,20 @@ HP.ajax = function (options) {
     loadHotelsElem.addEventListener('click', function () {
         _sendHotelsAjax(hideLoadHotels);
     });
+
+    /**** Scroll Pagination ****/
+
+    win.onscroll = function (ev) {
+        // Updated this height for fix in IOS Mac, Safari
+        if (win.innerHeight + win.scrollY >= doc.body.scrollHeight - 10) {
+            if (HP.rendered) {
+                HP.rendered = false;
+                _sendHotelsAjax();
+            }
+        }
+    };
+
+    /*** Scroll Pagination Ends Here ***/
 
     /*** Just For Testing Purpose **/
 
