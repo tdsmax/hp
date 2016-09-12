@@ -20790,6 +20790,8 @@ module.exports = require('./lib/React');
 var React = require('react');
 var ReactDOM = require('react-dom');
 
+/*** Helper Utils ***/
+
 /**
  * @description Util file :: From Vault
  * @author Tarandeep Singh
@@ -20978,11 +20980,12 @@ HP.ajax = function (options) {
 
 (function (win, doc, undefined) {
 
+    /** Under Development **/
+
     var HP = win.HP = win.HP || {};
 
     HP.carousel = function (comp) {
-
-        var mainComp = comp ? [comp] : doc.querySelectorAll('.carousel');
+        var mainComp = comp ? comp : doc.querySelectorAll('.carousel');
         if (mainComp) {
             Array.prototype.forEach.call(mainComp, function (comp) {
                 _construction(comp);
@@ -21029,372 +21032,386 @@ HP.ajax = function (options) {
                 }
             };
 
+            // TODO: Later
+            var _autoplay = function _autoplay() {};
+
+            // TODO: Later
+            var _destroy = function _destroy() {};
+
             _rightBtn.addEventListener("click", _right);
             _leftBtn.addEventListener("click", _left);
         }
     };
 })(window, document);
 
-/**
- * @description This is the main React and app Logic
- * @author Tarandeep Singh
- * @created 2016-09-11
- * */
+/*** Helper Utils Ends Here ***/
 
-var container = "hotelsContainer";
-var errorContainer = "hotelErrorsContainer";
-var containerElem = document.getElementById(container);
-var size = 5;
-var scrollCount = -1;
-var loadHotelsElem = document.getElementById("loadHotels");
-var loadErrorsElem = document.getElementById("loadErrors");
+/**** Main App ***/
 
-// Handle Ajax Calls Here
-var urls = {
-    error: "http://fake-hotel-api.herokuapp.com/api/hotels?&force_error=true",
-    hotels: "http://fake-hotel-api.herokuapp.com/api/hotels?&no_error=true",
-    reviews: "http://fake-hotel-api.herokuapp.com/api/reviews?&no_error=true"
-};
+(function (win, doc, undefined) {
+    var HP = win.HP || {};
+    /**
+     * @description This is the main React and app Logic
+     * @author Tarandeep Singh
+     * @created 2016-09-11
+     * */
+    var container = "hotelsContainer";
+    var errorContainer = "hotelErrorsContainer";
+    var containerElem = doc.getElementById(container);
+    var size = 5;
+    var scrollCount = -1;
+    var loadHotelsElem = doc.getElementById("loadHotels");
+    var loadErrorsElem = doc.getElementById("loadErrors");
 
-/**
- * @description This is Carousel React Component
- * @data It Expects array of images as Data
- * @author Tarandeep Singh : 2016-09-12
- * */
-var CarouselComp = React.createClass({
-    displayName: 'CarouselComp',
+    /** Handle Ajax Calls Here **/
+    var urls = {
+        error: "http://fake-hotel-api.herokuapp.com/api/hotels?&force_error=true",
+        hotels: "http://fake-hotel-api.herokuapp.com/api/hotels?&no_error=true",
+        reviews: "http://fake-hotel-api.herokuapp.com/api/reviews?&no_error=true"
+    };
 
-    render: function render() {
-        var carousel = this.props.data.map(function (image, index) {
-            return React.createElement('img', { key: index, className: 'hImg carouselComp', src: image, alt: 'Hotel Image' });
-        });
-        return React.createElement(
-            'section',
-            { className: 'carousel' },
-            React.createElement(
-                'div',
-                { className: 'leftBtn' },
-                '◀'
-            ),
-            React.createElement(
-                'div',
-                { className: 'carouselSec' },
-                carousel
-            ),
-            React.createElement(
-                'div',
-                { className: 'rightBtn' },
-                '▶'
-            )
-        );
-    }
-});
+    /**
+     * @description This is Carousel React Component
+     * @data It Expects array of images as Data
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    var CarouselComp = React.createClass({
+        displayName: 'CarouselComp',
 
-/**
- * @description This is Hotel React Component
- * @data It Expects Hotel Object as Data
- * @author Tarandeep Singh : 2016-09-12
- * */
-var Hotel = React.createClass({
-    displayName: 'Hotel',
-
-    toggleReviews: function toggleReviews(event) {
-        var tar = event.currentTarget;
-        var data = tar.getAttribute('data-toggle');
-        var reviewElem = document.getElementById(this.props.data.id).querySelector('.hReview');
-        var cached = reviewElem.querySelector(".hReviewList");
-        var cb = function cb() {
-            tar.textContent = "Hide Reviews";
-        };
-        if (data === "show") {
-            if (!cached) {
-                _sendReviewsAjax(this.props.data.id, cb);
-            } else {
-                cb();
-            }
-            tar.setAttribute('data-toggle', 'hide');
-            reviewElem.classList.toggle('hide');
-        } else {
-            tar.textContent = "Show Reviews";
-            tar.setAttribute('data-toggle', 'show');
-            reviewElem.classList.toggle('hide');
-        }
-    },
-    render: function render() {
-        var hotel = this.props.data;
-        var ratings = [1, 2, 3, 4, 5].map(function (i, j) {
-            return i <= hotel.stars ? React.createElement(
-                'span',
-                { key: j },
-                '★'
-            ) : React.createElement(
-                'span',
-                { key: j },
-                '☆'
-            );
-        });
-        return React.createElement(
-            'div',
-            { id: hotel.id, className: 'hComp blk' },
-            React.createElement(
+        render: function render() {
+            var carousel = this.props.data.map(function (image, index) {
+                return React.createElement('img', { key: index, className: 'hImg carouselComp', src: image, alt: 'Hotel Image' });
+            });
+            return React.createElement(
                 'section',
-                { className: 'hSec' },
+                { className: 'carousel' },
                 React.createElement(
                     'div',
-                    { className: 'hComp__left' },
-                    React.createElement(CarouselComp, { data: hotel.images })
+                    { className: 'leftBtn' },
+                    '◀'
                 ),
                 React.createElement(
                     'div',
-                    { className: 'hComp__right blk' },
-                    React.createElement(
-                        'div',
-                        { className: 'hHead blk' },
-                        React.createElement(
-                            'div',
-                            { className: 'hTitle fLeft' },
-                            React.createElement(
-                                'h2',
-                                { className: 'hName text-capitalize' },
-                                hotel.name
-                            ),
-                            React.createElement(
-                                'h4',
-                                { className: 'hCityCon text-capitalize' },
-                                hotel.city + " - " + hotel.country
-                            )
-                        ),
-                        React.createElement(
-                            'div',
-                            { className: 'mtb-20 hRating fRight' },
-                            ratings
-                        )
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'hDesc blk' },
-                        hotel.description
-                    ),
-                    React.createElement(
-                        'div',
-                        { className: 'hRevPrice blk' },
-                        React.createElement(
-                            'button',
-                            { className: 'btn fLeft', 'data-toggle': 'show', onClick: this.toggleReviews, id: 'showReviews' },
-                            'Show Reviews'
-                        ),
-                        React.createElement(
-                            'div',
-                            { className: 'hPrTm fRight' },
-                            React.createElement(
-                                'div',
-                                { className: 'hPrice' },
-                                hotel.price,
-                                ' €'
-                            ),
-                            React.createElement(
-                                'div',
-                                { className: 'hTime' },
-                                hotel.date_start.substr(0, 10).split('-').reverse().join('-'),
-                                ' - ',
-                                hotel.date_end.substr(0, 10).split('-').reverse().join('-')
-                            )
-                        )
-                    )
+                    { className: 'carouselSec' },
+                    carousel
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'rightBtn' },
+                    '▶'
                 )
-            ),
-            React.createElement('div', { className: 'hReview hide' })
-        );
-    }
-});
+            );
+        }
+    });
 
-/**
- * @description This is HotelReview React Component
- * @data It Expects array of review Objects as Data
- * @author Tarandeep Singh : 2016-09-12
- * */
-var HotelReview = React.createClass({
-    displayName: 'HotelReview',
+    /**
+     * @description This is Hotel React Component
+     * @data It Expects Hotel Object as Data
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    var Hotel = React.createClass({
+        displayName: 'Hotel',
 
-    render: function render() {
-        var data = this.props.data;
-        var reviews = data && data.length > 0 ? this.props.data.map(function (review, index) {
+        toggleReviews: function toggleReviews(event) {
+            var tar = event.currentTarget;
+            var data = tar.getAttribute('data-toggle');
+            var reviewElem = doc.getElementById(this.props.data.id).querySelector('.hReview');
+            var cached = reviewElem.querySelector(".hReviewList");
+            var cb = function cb() {
+                tar.textContent = "Hide Reviews";
+            };
+            if (data === "show") {
+                if (!cached) {
+                    _sendReviewsAjax(this.props.data.id, cb);
+                } else {
+                    cb();
+                }
+                tar.setAttribute('data-toggle', 'hide');
+                reviewElem.classList.toggle('hide');
+            } else {
+                tar.textContent = "Show Reviews";
+                tar.setAttribute('data-toggle', 'show');
+                reviewElem.classList.toggle('hide');
+            }
+        },
+        render: function render() {
+            var hotel = this.props.data;
+            var ratings = [1, 2, 3, 4, 5].map(function (i, j) {
+                return i <= hotel.stars ? React.createElement(
+                    'span',
+                    { key: j },
+                    '★'
+                ) : React.createElement(
+                    'span',
+                    { key: j },
+                    '☆'
+                );
+            });
             return React.createElement(
                 'div',
-                { key: index, className: 'rev blk' },
-                React.createElement(
-                    'div',
-                    { className: 'revIcon' },
-                    React.createElement(
-                        'div',
-                        { className: 'revSign' },
-                        review.positive ? '+' : '-'
-                    )
-                ),
+                { id: hotel.id, className: 'hComp blk' },
                 React.createElement(
                     'section',
-                    { className: 'revDetail' },
+                    { className: 'hSec' },
                     React.createElement(
                         'div',
-                        { className: 'revTitle' },
-                        review.name
+                        { className: 'hComp__left' },
+                        React.createElement(CarouselComp, { data: hotel.images })
                     ),
                     React.createElement(
                         'div',
-                        { className: 'revComment' },
-                        review.comment
+                        { className: 'hComp__right blk' },
+                        React.createElement(
+                            'div',
+                            { className: 'hHead blk' },
+                            React.createElement(
+                                'div',
+                                { className: 'hTitle fLeft' },
+                                React.createElement(
+                                    'h2',
+                                    { className: 'hName text-capitalize' },
+                                    hotel.name
+                                ),
+                                React.createElement(
+                                    'h4',
+                                    { className: 'hCityCon text-capitalize' },
+                                    hotel.city + " - " + hotel.country
+                                )
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'mtb-20 hRating fRight' },
+                                ratings
+                            )
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'hDesc blk' },
+                            hotel.description
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'hRevPrice blk' },
+                            React.createElement(
+                                'button',
+                                { className: 'btn fLeft', 'data-toggle': 'show', onClick: this.toggleReviews, id: 'showReviews' },
+                                'Show Reviews'
+                            ),
+                            React.createElement(
+                                'div',
+                                { className: 'hPrTm fRight' },
+                                React.createElement(
+                                    'div',
+                                    { className: 'hPrice' },
+                                    hotel.price,
+                                    ' €'
+                                ),
+                                React.createElement(
+                                    'div',
+                                    { className: 'hTime' },
+                                    hotel.date_start.substr(0, 10).split('-').reverse().join('-'),
+                                    ' - ',
+                                    hotel.date_end.substr(0, 10).split('-').reverse().join('-')
+                                )
+                            )
+                        )
                     )
-                )
+                ),
+                React.createElement('div', { className: 'hReview hide' })
             );
-        }) : React.createElement(
-            'div',
-            { className: 'noData' },
-            'Yet to be Reviewed..  '
-        );
-        return React.createElement(
-            'div',
-            { className: 'hReviewList' },
-            reviews
-        );
-    }
-});
+        }
+    });
 
-/**
- * @description This is the Main App Holiday Hotels React Component: It Shows list of hotels on Load Hotels click
- * @author Tarandeep Singh
- * @created 2016-09-12
- * */
-var HolidayHotels = React.createClass({
-    displayName: 'HolidayHotels',
+    /**
+     * @description This is HotelReview React Component
+     * @data It Expects array of review Objects as Data
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    var HotelReview = React.createClass({
+        displayName: 'HotelReview',
 
-    render: function render() {
-        var hotels = this.props.data.map(function (hotel, index) {
-            return React.createElement(Hotel, { key: index, data: hotel });
+        render: function render() {
+            var data = this.props.data;
+            var reviews = data && data.length > 0 ? this.props.data.map(function (review, index) {
+                return React.createElement(
+                    'div',
+                    { key: index, className: 'rev blk' },
+                    React.createElement(
+                        'div',
+                        { className: 'revIcon' },
+                        React.createElement(
+                            'div',
+                            { className: 'revSign' },
+                            review.positive ? '+' : '-'
+                        )
+                    ),
+                    React.createElement(
+                        'section',
+                        { className: 'revDetail' },
+                        React.createElement(
+                            'div',
+                            { className: 'revTitle' },
+                            review.name
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'revComment' },
+                            review.comment
+                        )
+                    )
+                );
+            }) : React.createElement(
+                'div',
+                { className: 'noData' },
+                'Yet to be Reviewed..  '
+            );
+            return React.createElement(
+                'div',
+                { className: 'hReviewList' },
+                reviews
+            );
+        }
+    });
+
+    /**
+     * @description This is the Main App Holiday Hotels React Component: It Shows list of hotels on Load Hotels click
+     * @author Tarandeep Singh
+     * @created 2016-09-12
+     * */
+    var HolidayHotels = React.createClass({
+        displayName: 'HolidayHotels',
+
+        render: function render() {
+            var hotels = this.props.data.map(function (hotel, index) {
+                return React.createElement(Hotel, { key: index, data: hotel });
+            });
+            return React.createElement(
+                'div',
+                { className: 'hList' },
+                hotels
+            );
+        }
+    });
+
+    /**
+     * @description This is main Rendered Function called for Rendeing Hotel List
+     * @data It Expects HotelList as Data from Ajax Results
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    function _renderHotel(data, scrollCount, cb) {
+        var id = container + scrollCount;
+        if (!doc.getElementById(id)) {
+            var elem = doc.createElement("div");
+            elem.id = id;
+            elem.class = "hCont";
+            containerElem.appendChild(elem);
+        }
+        ReactDOM.render(React.createElement(HolidayHotels, { data: data }), doc.getElementById(id), function () {
+            /** Initialize Carousel on Hotels Here **/
+            HP.carousel();
+            if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
+                cb.call(this);
+            }
         });
-        return React.createElement(
+    }
+
+    /**
+     * @description This is Review Rendering Function
+     * @data It Expects data from Ajax call for Reviews and rendering ID
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    function _renderReviews(data, id, cb) {
+        ReactDOM.render(React.createElement(HotelReview, { data: data }), doc.getElementById(id).querySelector(".hReview"), function () {
+            if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
+                cb.call(this);
+            }
+        });
+    }
+
+    /**
+     * @description This is Render Error
+     * @data It Expects data from Ajax call on Error
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    function _renderError(data, id, cb) {
+        ReactDOM.render(React.createElement(
             'div',
-            { className: 'hList' },
-            hotels
-        );
+            { className: 'error' },
+            data
+        ), doc.getElementById(id), function () {
+            if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
+                cb.call(this);
+            }
+        });
     }
-});
 
-/**
- * @description This is main Rendered Function called for Rendeing Hotel List
- * @data It Expects HotelList as Data from Ajax Results
- * @author Tarandeep Singh : 2016-09-12
- * */
-function _renderHotel(data, scrollCount, cb) {
-    var id = container + scrollCount;
-    if (!document.getElementById(id)) {
-        var elem = document.createElement("div");
-        elem.id = id;
-        elem.class = "hCont";
-        containerElem.appendChild(elem);
+    /**
+     * @description This function is called to Bring Hotel Data From API
+     * @data It Expects data from Ajax call for Reviews and rendering ID
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    function _sendHotelsAjax(cb) {
+        HP.ajax({
+            url: urls.hotels + "&count=" + size,
+            success: function success(res) {
+                _renderHotel(JSON.parse(res), ++scrollCount, cb);
+            },
+            error: function error(res) {
+                _renderError(JSON.parse(res.responseText).error, errorContainer);
+            }
+        });
     }
-    ReactDOM.render(React.createElement(HolidayHotels, { data: data }), document.getElementById(id), function () {
-        if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
-            cb.call(this);
-        }
+
+    /**
+     * @description This function is called to Bring Review Data From API for particular hotel
+     * @data It Expects data from Ajax call for Reviews and rendering ID
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    function _sendReviewsAjax(id, cb) {
+        HP.ajax({
+            url: urls.reviews + "&hotel_id=" + id,
+            success: function success(res) {
+                res = JSON.parse(res);
+                _renderReviews(res, id, cb);
+            },
+            error: function error(res) {
+                _renderError(JSON.parse(res.responseText).error, errorContainer);
+            }
+        });
+    }
+
+    /**
+     * @description This is helper function to be called post successful hotels Data
+     * @data It Expects data from Ajax call for Reviews and rendering ID
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    function hideLoadHotels() {
+        loadHotelsElem.classList.add("btn--hide");
+    }
+
+    /**
+     * @description This function is Used to Attach Ajax Application Load Call
+     * @data It Expects data from Ajax call for Reviews and rendering ID
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    loadHotelsElem.addEventListener('click', function () {
+        _sendHotelsAjax(hideLoadHotels);
     });
-}
 
-/**
- * @description This is Review Rendering Function
- * @data It Expects data from Ajax call for Reviews and rendering ID
- * @author Tarandeep Singh : 2016-09-12
- * */
-function _renderReviews(data, id, cb) {
-    ReactDOM.render(React.createElement(HotelReview, { data: data }), document.getElementById(id).querySelector(".hReview"), function () {
-        if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
-            cb.call(this);
-        }
+    /*** Just For Testing Purpose **/
+
+    function _sendHotelsErrorAjax() {
+        HP.ajax({
+            url: urls.error,
+            error: function error(res) {
+                _renderError(JSON.parse(res.responseText).error, errorContainer);
+            }
+        });
+    }
+
+    loadErrorsElem.addEventListener('click', function () {
+        _sendHotelsErrorAjax();
     });
-}
-
-/**
- * @description This is Render Error
- * @data It Expects data from Ajax call on Error
- * @author Tarandeep Singh : 2016-09-12
- * */
-function _renderError(data, id, cb) {
-    ReactDOM.render(React.createElement(
-        'div',
-        { className: 'error' },
-        data
-    ), document.getElementById(id), function () {
-        if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
-            cb.call(this);
-        }
-    });
-}
-
-/**
- * @description This function is called to Bring Hotel Data From API
- * @data It Expects data from Ajax call for Reviews and rendering ID
- * @author Tarandeep Singh : 2016-09-12
- * */
-function _sendHotelsAjax(cb) {
-    HP.ajax({
-        url: urls.hotels + "&count=" + size,
-        success: function success(res) {
-            _renderHotel(JSON.parse(res), ++scrollCount, cb);
-        },
-        error: function error(res) {
-            _renderError(JSON.parse(res.responseText).error, errorContainer);
-        }
-    });
-}
-
-/**
- * @description This function is called to Bring Review Data From API for particular hotel
- * @data It Expects data from Ajax call for Reviews and rendering ID
- * @author Tarandeep Singh : 2016-09-12
- * */
-function _sendReviewsAjax(id, cb) {
-    HP.ajax({
-        url: urls.reviews + "&hotel_id=" + id,
-        success: function success(res) {
-            res = JSON.parse(res);
-            _renderReviews(res, id, cb);
-        },
-        error: function error(res) {
-            _renderError(JSON.parse(res.responseText).error, errorContainer);
-        }
-    });
-}
-
-/**
- * @description This is helper function to be called post successful hotels Data
- * @data It Expects data from Ajax call for Reviews and rendering ID
- * @author Tarandeep Singh : 2016-09-12
- * */
-function hideLoadHotels() {
-    loadHotelsElem.classList.add("btn--hide");
-}
-
-/**
- * @description This function is Used to Attach Ajax Application Load Call
- * @data It Expects data from Ajax call for Reviews and rendering ID
- * @author Tarandeep Singh : 2016-09-12
- * */
-loadHotelsElem.addEventListener('click', function () {
-    _sendHotelsAjax(hideLoadHotels);
-});
-
-/*** Just For Testing Purpose **/
-
-function _sendHotelsErrorAjax() {
-    HP.ajax({
-        url: urls.error,
-        error: function error(res) {
-            _renderError(JSON.parse(res.responseText).error, errorContainer);
-        }
-    });
-}
-
-loadErrorsElem.addEventListener('click', function () {
-    _sendHotelsErrorAjax();
-});
+})(window, document);
 
 },{"react":174,"react-dom":29}]},{},[175]);
