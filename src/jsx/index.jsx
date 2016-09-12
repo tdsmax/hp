@@ -295,8 +295,8 @@ var HotelReview = React.createClass({
                 ? this.props.data.map(function (review, index) {
                         return (
                             <div key={index} className="rev blk">
-                                <div className="revIcon block">
-                                    <div className="revSign centered">{review.positive ? '+' : '-'}</div>
+                                <div className="revIcon">
+                                    <div className="revSign">{review.positive ? '+' : '-'}</div>
                                 </div>
                                 <section className="revDetail">
                                     <div className="revTitle">{review.name}</div>

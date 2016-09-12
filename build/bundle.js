@@ -21113,10 +21113,10 @@ var HotelReview = React.createClass({
                 { key: index, className: 'rev blk' },
                 React.createElement(
                     'div',
-                    { className: 'revIcon block' },
+                    { className: 'revIcon' },
                     React.createElement(
                         'div',
-                        { className: 'revSign centered' },
+                        { className: 'revSign' },
                         review.positive ? '+' : '-'
                     )
                 ),
