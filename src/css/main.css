@@ -357,7 +357,7 @@ main {
 }
 
 .btn--hide {
-    display: block;
+    display: none;
 }
 
 
@@ -368,14 +368,12 @@ main {
 }
 
 .carouselSec {
-    width: 5000px;
     transition: all .5s ease-in;
     position: relative;
     left: 0;
 }
 .carouselComp {
     float: left;
-    width: 512px !important;
 }
 
 .hComp {
@@ -567,8 +565,8 @@ section.revDetail {
     min-width: 30px;
     font-size: 20px;
     position: absolute;
-    top: 440px;
-    left: 0px;
+    top: 90%;
+    left: 1%;
     cursor: pointer;
     z-index: 100;
     color: lightgrey;
@@ -577,5 +575,5 @@ section.revDetail {
 }
 
 .rightBtn {
-    left: 490px;
+    left: Calc(100% - 20px);
 }

@@ -20976,6 +20976,8 @@ HP.ajax = function (options) {
 
 /**
  * Created by Tarandeep Singh on 02/08/16. :: Lightest Carousel Component : From Vault
+ * @modified 2016-09-12 :: Added Support for Different Resolutions
+ *
  */
 
 (function (win, doc, undefined) {
@@ -20995,10 +20997,23 @@ HP.ajax = function (options) {
             var _running = false;
             var ci = 0;
             var _compsContainer = comp.querySelector('.carouselSec');
-            var _compsWidth = 512;
-            var _compsLen = comp.querySelectorAll('.carouselComp').length;
+            var _compsWidth = comp.offsetWidth;
+            var _comps = comp.querySelectorAll('.carouselComp');
+            var _compsLen = _comps.length;
             var _rightBtn = comp.querySelector('.rightBtn');
             var _leftBtn = comp.querySelector('.leftBtn');
+
+            /*** No Carousel for single image ***/
+            if (!_compsLen > 1) {
+                _leftBtn.classList.add('hide');
+                _rightBtn.classList.add('hide');
+                return 0;
+            }
+            /** Set Styling Made Responsive :: Not on Resize widow but for Different Resolution Load this should Work  **/
+            _compsContainer.style.width = _compsLen * _compsWidth + "px";
+            for (var i = 0; i < _compsLen; i++) {
+                _comps[i].style.width = _compsWidth + "px";
+            }
 
             var _avoidMultiClick = function _avoidMultiClick() {
                 _running = true;
@@ -21080,11 +21095,11 @@ HP.ajax = function (options) {
 
         render: function render() {
             var carousel = this.props.data.map(function (image, index) {
-                return React.createElement('img', { key: index, className: 'hImg carouselComp', src: image, alt: 'Hotel Image' });
+                return React.createElement('img', { key: index, className: 'hImg carouselComp', src: image, alt: 'Hotel Image Loading... ' });
             });
             return React.createElement(
                 'section',
-                { className: 'carousel' },
+                { className: 'carousel blk' },
                 React.createElement(
                     'div',
                     { className: 'leftBtn' },
@@ -21329,23 +21344,6 @@ HP.ajax = function (options) {
     }
 
     /**
-     * @description This is Render Error
-     * @data It Expects data from Ajax call on Error
-     * @author Tarandeep Singh : 2016-09-12
-     * */
-    function _renderError(data, id, cb) {
-        ReactDOM.render(React.createElement(
-            'div',
-            { className: 'error' },
-            data
-        ), doc.getElementById(id), function () {
-            if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
-                cb.call(this);
-            }
-        });
-    }
-
-    /**
      * @description This function is called to Bring Hotel Data From API
      * @data It Expects data from Ajax call for Reviews and rendering ID
      * @author Tarandeep Singh : 2016-09-12
@@ -21387,6 +21385,7 @@ HP.ajax = function (options) {
      * */
     function hideLoadHotels() {
         loadHotelsElem.classList.add("btn--hide");
+        doc.getElementById(errorContainer).classList.add("btn--hide");
     }
 
     /**
@@ -21400,18 +21399,46 @@ HP.ajax = function (options) {
 
     /*** Just For Testing Purpose **/
 
-    function _sendHotelsErrorAjax() {
+    /**
+     * @description This is Render Error
+     * @data It Expects data from Ajax call on Error
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    function _renderError(data, id, cb) {
+        ReactDOM.render(React.createElement(
+            'div',
+            { className: 'error' },
+            data
+        ), doc.getElementById(id), function () {
+            if (Sys.isDefined(cb) && Sys.isFunction(cb)) {
+                cb.call(this);
+            }
+        });
+    }
+
+    /**
+     * @description This is helper function to be called post successful hotels Data
+     * @data It Expects data from Ajax call for Reviews and rendering ID
+     * @author Tarandeep Singh : 2016-09-12
+     * */
+    function hideErrorHotels() {
+        loadErrorsElem.classList.add("btn--hide");
+    }
+
+    function _sendHotelsErrorAjax(cb) {
         HP.ajax({
             url: urls.error,
             error: function error(res) {
-                _renderError(JSON.parse(res.responseText).error, errorContainer);
+                _renderError(JSON.parse(res.responseText).error, errorContainer, cb);
             }
         });
     }
 
     loadErrorsElem.addEventListener('click', function () {
-        _sendHotelsErrorAjax();
+        _sendHotelsErrorAjax(hideErrorHotels);
     });
+
+    /*** Error Testing Ends Here ***/
 })(window, document);
 
 },{"react":174,"react-dom":29}]},{},[175]);
