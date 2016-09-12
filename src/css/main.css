@@ -368,7 +368,7 @@ main {
 
 .hComp {
     width: 100%;
-    margin: 20px 0;
+    margin: 30px 0;
     border-radius: 4px;
     box-shadow: 0 0 4px rgba(0,0,0,0.5);
     background-color: rgba(0,0,0,0.05);
@@ -447,6 +447,8 @@ main {
     height: 480px;
     border-bottom: 1px solid lightgray;
     padding-bottom: 2px;
+    /* display: flex; */
+    /* justify-content: center; */
 }
 
 .hTime {
@@ -459,6 +461,7 @@ main {
     margin: auto;
     border-bottom: 1px solid lightgray;
     padding: 10px 0;
+    position: relative;
 }
 
 .revSign {
@@ -474,9 +477,11 @@ main {
 
 .revIcon {
     float: left;
-    margin: 0 20px;
-    /* height: 100%; */
+    margin: 0 2.5%;
     width: 5%;
+    position: relative;
+    top: 50%;
+    transform: translateY(50%);
 }
 
 section.revDetail {
@@ -490,7 +495,7 @@ section.revDetail {
 }
 
 .hReviewList {
-    background-color: #aaa;
+    background-color: #ccc;
 }
 
 .revComment {
@@ -498,6 +503,11 @@ section.revDetail {
     color: #333;
     line-height: 1em;
     margin-bottom: 10px;
+}
+
+.noData {
+    margin: 20px;
+    padding: 20px;
 }
 
 /*
@@ -521,8 +531,16 @@ section.revDetail {
     }
 }
 
+@media screen and (max-width: 550px){
+    main {
+        margin: 0;
+        font-size: 14px;
+    }
+    .hImg {
+        max-height: 220px
+    }
+    .hComp__right {
+        min-height: 300px;
+    }
 
-.noData {
-    margin: 20px;
-    padding: 20px;
 }
